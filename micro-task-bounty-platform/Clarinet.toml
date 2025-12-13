@@ -7,15 +7,15 @@ cache_dir = "./.cache"
 
 [contracts.reputation-tracker]
 path = "contracts/reputation-tracker.clar"
-epoch = "latest"
+epoch = "2.5"
 
 [contracts.task-escrow]
 path = "contracts/task-escrow.clar"
-epoch = "latest"
+epoch = "2.5"
 
 [contracts.task-manager]
 path = "contracts/task-manager.clar"
-epoch = "latest"
+epoch = "2.5"
 
 [repl.analysis]
 passes = ["check_checker"]

@@ -107,18 +107,15 @@
 )
 
 (define-public (deposit-escrow (task-id uint) (amount uint) (creator principal))
-    (begin
+    (let (
+        (platform-fee (/ (* amount PLATFORM-FEE-PERCENT) u10000))
+        (total-amount (+ amount platform-fee))
+    )
         ;; Only authorized contracts can call this
         (asserts! (default-to false (map-get? authorized-contracts contract-caller)) ERR-NOT-AUTHORIZED)
         
         ;; Validate amount
         (asserts! (validate-amount amount) ERR-INVALID-AMOUNT)
-        
-        ;; Calculate total with platform fee
-        (let (
-            (platform-fee (/ (* amount PLATFORM-FEE-PERCENT) u10000))
-            (total-amount (+ amount platform-fee))
-        )
         
         ;; Transfer STX from creator to this contract
         (try! (stx-transfer? total-amount creator (as-contract tx-sender)))
@@ -139,7 +136,7 @@
                 dispute-opened-at: none,
                 dispute-resolved: false
             }
-        )))
+        ))
     )
 )
 

@@ -140,8 +140,6 @@
     (deadline uint))
     (let (
         (task-id (+ (var-get task-counter) u1))
-        (escrow-contract-addr (unwrap! (var-get escrow-contract) ERR-ESCROW-FAILED))
-        (reputation-contract-addr (var-get reputation-contract))
     )
     
     ;; Validate inputs
@@ -150,13 +148,16 @@
     (asserts! (validate-category category) ERR-INVALID-CATEGORY)
     (asserts! (> deadline block-height) ERR-DEADLINE-PASSED)
     
+    ;; Ensure escrow contract is set
+    (asserts! (is-some (var-get escrow-contract)) ERR-ESCROW-FAILED)
+    
     ;; Deposit escrow
     (unwrap! (contract-call? .task-escrow deposit-escrow task-id reward tx-sender) ERR-ESCROW-FAILED)
     
     ;; Record task creation in reputation contract (if set)
-    (match reputation-contract-addr
-        rep-contract (contract-call? .reputation-tracker record-task-created tx-sender reward)
-        (ok true)
+    (match (var-get reputation-contract)
+        rep-contract (try! (contract-call? .reputation-tracker record-task-created tx-sender reward))
+        true
     )
     
     ;; Create task
