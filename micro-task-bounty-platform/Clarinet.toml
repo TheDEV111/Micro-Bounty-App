@@ -1,13 +1,21 @@
 [project]
 name = "micro-task-bounty-platform"
-description = ""
+description = "Decentralized micro-task marketplace on Stacks blockchain"
 authors = []
 telemetry = true
 cache_dir = "./.cache"
 
-# [contracts.counter]
-# path = "contracts/counter.clar"
-# epoch = "latest"
+[contracts.reputation-tracker]
+path = "contracts/reputation-tracker.clar"
+epoch = "latest"
+
+[contracts.task-escrow]
+path = "contracts/task-escrow.clar"
+epoch = "latest"
+
+[contracts.task-manager]
+path = "contracts/task-manager.clar"
+epoch = "latest"
 
 [repl.analysis]
 passes = ["check_checker"]
