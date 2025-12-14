@@ -7,19 +7,18 @@ import {
   Button,
   Text,
   Container,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   IconButton,
   useDisclosure,
   VStack,
   Drawer,
   DrawerBody,
   DrawerHeader,
-  DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
+  CloseButton,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { 
@@ -28,9 +27,6 @@ import {
   Search, 
   User, 
   Wallet,
-  LayoutDashboard,
-  TrendingUp,
-  Award,
   ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
@@ -64,58 +60,62 @@ const DropdownMenu = ({
   icon: any; 
   items: { label: string; href: string; description?: string }[] 
 }) => (
-  <Menu>
-    {({ isOpen }) => (
-      <>
-        <MenuButton
-          as={Button}
-          variant="ghost"
-          color="gray.700"
-          fontWeight="500"
-          rightIcon={<ChevronDown size={16} />}
-          leftIcon={<Icon size={18} />}
-          _hover={{
-            color: 'brand.500',
-            bg: 'gray.50',
-          }}
-          _active={{
-            bg: 'gray.100',
-          }}
-          transition="all 0.3s ease"
-        >
-          {label}
-        </MenuButton>
-        <MenuList
-          borderColor="gray.200"
-          boxShadow="xl"
-          py={2}
-          minW="240px"
-        >
+  <Popover trigger="hover" placement="bottom-start">
+    <PopoverTrigger>
+      <Button
+        variant="ghost"
+        color="gray.700"
+        fontWeight="500"
+        rightIcon={<ChevronDown size={16} />}
+        leftIcon={<Icon size={18} />}
+        _hover={{
+          color: 'brand.500',
+          bg: 'gray.50',
+        }}
+        _active={{
+          bg: 'gray.100',
+        }}
+        transition="all 0.3s ease"
+      >
+        {label}
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent
+      borderColor="gray.200"
+      boxShadow="xl"
+      w="280px"
+    >
+      <PopoverBody p={2}>
+        <VStack align="stretch" spacing={1}>
           {items.map((item, index) => (
             <Link key={index} href={item.href} passHref>
-              <MenuItem
+              <Button
+                variant="ghost"
+                justifyContent="start"
+                size="sm"
+                w="full"
                 _hover={{
                   bg: 'brand.50',
                   color: 'brand.600',
                 }}
                 transition="all 0.2s ease"
-                py={3}
+                py={6}
               >
-                <VStack align="start" spacing={0}>
-                  <Text fontWeight="600">{item.label}</Text>
+                <VStack align="start" spacing={0} w="full">
+                  <Text fontWeight="600" fontSize="sm">{item.label}</Text>
                   {item.description && (
                     <Text fontSize="xs" color="gray.500">
                       {item.description}
                     </Text>
                   )}
                 </VStack>
-              </MenuItem>
+              </Button>
             </Link>
           ))}
-        </MenuList>
-      </>
-    )}
-  </Menu>
+        </VStack>
+      </PopoverBody>
+    </PopoverContent>
+  </Popover>
 );
 
 export default function Navbar() {
@@ -182,21 +182,31 @@ export default function Navbar() {
           {/* Wallet Connect & Mobile Menu */}
           <HStack spacing={3}>
             {isConnected ? (
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  variant="outline"
-                  leftIcon={<Wallet size={18} />}
-                  display={{ base: 'none', md: 'flex' }}
-                  fontWeight="600"
-                >
-                  {userData?.profile?.stxAddress?.mainnet?.slice(0, 6)}...
-                  {userData?.profile?.stxAddress?.mainnet?.slice(-4)}
-                </MenuButton>
-                <MenuList>
-                  <MenuItem onClick={disconnectWallet}>Disconnect</MenuItem>
-                </MenuList>
-              </Menu>
+              <Popover>
+                <PopoverTrigger>
+                  <Button
+                    variant="outline"
+                    leftIcon={<Wallet size={18} />}
+                    display={{ base: 'none', md: 'flex' }}
+                    fontWeight="600"
+                  >
+                    {userData?.profile?.stxAddress?.mainnet?.slice(0, 6)}...
+                    {userData?.profile?.stxAddress?.mainnet?.slice(-4)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent w="200px">
+                  <PopoverBody>
+                    <Button
+                      variant="ghost"
+                      w="full"
+                      onClick={disconnectWallet}
+                      size="sm"
+                    >
+                      Disconnect
+                    </Button>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
             ) : (
               <Button
                 leftIcon={<Wallet size={18} />}
@@ -222,10 +232,13 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-        <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Menu</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">
+            <HStack justify="space-between">
+              <Text>Menu</Text>
+              <CloseButton onClick={onClose} />
+            </HStack>
+          </DrawerHeader>
           <DrawerBody>
             <VStack align="stretch" spacing={4} mt={4}>
               <Text fontWeight="700" color="gray.600" fontSize="sm" textTransform="uppercase">

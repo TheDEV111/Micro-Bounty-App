@@ -10,7 +10,6 @@ import {
   VStack,
   HStack,
   IconButton,
-  Divider,
 } from '@chakra-ui/react';
 import { 
   Twitter, 
@@ -140,7 +139,7 @@ export default function Footer() {
           </VStack>
         </SimpleGrid>
 
-        <Divider my={8} borderColor="gray.700" />
+        <Box borderTop="1px" borderColor="gray.700" my={8} />
 
         {/* Bottom Section */}
         <Stack
