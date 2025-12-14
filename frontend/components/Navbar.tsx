@@ -1,25 +1,6 @@
 'use client';
 
-import {
-  Box,
-  Flex,
-  HStack,
-  Button,
-  Text,
-  Container,
-  IconButton,
-  useDisclosure,
-  VStack,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerContent,
-  CloseButton,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-} from '@chakra-ui/react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Menu as MenuIcon, 
@@ -27,115 +8,60 @@ import {
   Search, 
   User, 
   Wallet,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useStacks } from '@/providers/stacks-provider';
 
-const MotionBox = motion(Box);
-
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <Link href={href} passHref>
-    <Button
-      variant="ghost"
-      color="gray.700"
-      fontWeight="500"
-      _hover={{
-        color: 'brand.500',
-        bg: 'gray.50',
-      }}
-      transition="all 0.3s ease"
-    >
-      {children}
-    </Button>
-  </Link>
-);
-
 const DropdownMenu = ({ 
   label, 
-  icon: IconComponent, 
+  icon: Icon, 
   items 
 }: { 
   label: string; 
   icon: any; 
   items: { label: string; href: string; description?: string }[] 
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   
   return (
-    <Popover
-      isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
-      placement="bottom-start"
-      trigger="hover"
+    <div 
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
     >
-      <PopoverTrigger>
-        <Button
-          variant="ghost"
-          color="gray.700"
-          fontWeight="500"
-          onMouseEnter={onOpen}
-          onMouseLeave={onClose}
-          _hover={{
-            color: 'brand.500',
-            bg: 'gray.50',
-          }}
-          _active={{
-            bg: 'gray.100',
-          }}
-          transition="all 0.3s ease"
+      <button className="px-4 py-2 text-gray-700 font-medium hover:text-brand-500 hover:bg-gray-50 rounded-lg transition-all duration-300 flex items-center gap-2">
+        <Icon size={18} />
+        <span>{label}</span>
+        <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
         >
-          <HStack spacing={2}>
-            <IconComponent size={18} />
-            <Text>{label}</Text>
-            <ChevronDown size={16} />
-          </HStack>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        borderColor="gray.200"
-        boxShadow="xl"
-        w="280px"
-        onMouseEnter={onOpen}
-        onMouseLeave={onClose}
-      >
-      <PopoverBody p={2}>
-        <VStack align="stretch" spacing={1}>
           {items.map((item, index) => (
-            <Link key={index} href={item.href} passHref>
-              <Button
-                variant="ghost"
-                justifyContent="start"
-                size="sm"
-                w="full"
-                _hover={{
-                  bg: 'brand.50',
-                  color: 'brand.600',
-                }}
-                transition="all 0.2s ease"
-                py={6}
-              >
-                <VStack align="start" spacing={0} w="full">
-                  <Text fontWeight="600" fontSize="sm">{item.label}</Text>
-                  {item.description && (
-                    <Text fontSize="xs" color="gray.500">
-                      {item.description}
-                    </Text>
-                  )}
-                </VStack>
-              </Button>
+            <Link key={index} href={item.href}>
+              <button className="w-full px-4 py-3 text-left hover:bg-brand-50 transition-all">
+                <div className="font-semibold text-sm text-gray-800">{item.label}</div>
+                {item.description && (
+                  <div className="text-xs text-gray-500 mt-1">{item.description}</div>
+                )}
+              </button>
             </Link>
           ))}
-        </VStack>
-      </PopoverBody>
-    </PopoverContent>
-    </Popover>
+        </motion.div>
+      )}
+    </div>
   );
 };
 
 export default function Navbar() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [walletMenuOpen, setWalletMenuOpen] = useState(false);
   const { isConnected, connectWallet, disconnectWallet, userData } = useStacks();
 
   const tasksMenuItems = [
@@ -159,176 +85,158 @@ export default function Navbar() {
   ];
 
   return (
-    <MotionBox
-      as="nav"
-      position="sticky"
-      top={0}
-      zIndex={1000}
-      bg="white"
-      borderBottom="1px"
-      borderColor="gray.200"
-      boxShadow="sm"
+    <motion.nav
+      className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Container maxW="7xl" py={4}>
-        <Flex justify="space-between" align="center">
-          {/* Logo */}
-          <Link href="/" passHref>
-            <HStack spacing={2} cursor="pointer" _hover={{ opacity: 0.8 }} transition="all 0.3s">
-              <Box bg="brand.500" p={2} borderRadius="lg">
-                <Briefcase size={24} color="white" />
-              </Box>
-              <Text fontSize="xl" fontWeight="800" color="gray.800" fontFamily="heading">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-all">
+              <div className="bg-brand-500 p-2 rounded-lg">
+                <Briefcase size={24} className="text-white" />
+              </div>
+              <span className="text-xl font-extrabold text-gray-800 font-poppins">
                 TaskBounty
-              </Text>
-            </HStack>
+              </span>
+            </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <HStack spacing={1} display={{ base: 'none', lg: 'flex' }}>
+          <div className="hidden lg:flex items-center gap-1">
             <DropdownMenu label="Tasks" icon={Briefcase} items={tasksMenuItems} />
             <DropdownMenu label="Explore" icon={Search} items={exploreMenuItems} />
             {isConnected && (
               <DropdownMenu label="Account" icon={User} items={accountMenuItems} />
             )}
-          </HStack>
+          </div>
 
-          {/* Wallet Connect & Mobile Menu */}
-          <HStack spacing={3}>
+          <div className="flex items-center gap-3">
             {isConnected ? (
-              <Popover>
-                <PopoverTrigger>
-                  <Button
-                    variant="outline"
-                    display={{ base: 'none', md: 'flex' }}
-                    fontWeight="600"
-                  >
-                    <HStack spacing={2}>
-                      <Wallet size={18} />
-                      <Text>
-                        {userData?.profile?.stxAddress?.mainnet?.slice(0, 6)}...
-                        {userData?.profile?.stxAddress?.mainnet?.slice(-4)}
-                      </Text>
-                    </HStack>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent w="200px">
-                  <PopoverBody>
-                    <Button
-                      variant="ghost"
-                      w="full"
-                      onClick={disconnectWallet}
-                      size="sm"
+              <div className="relative">
+                <button
+                  onClick={() => setWalletMenuOpen(!walletMenuOpen)}
+                  className="hidden md:flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                >
+                  <Wallet size={18} />
+                  <span>
+                    {userData?.profile?.stxAddress?.mainnet?.slice(0, 6)}...
+                    {userData?.profile?.stxAddress?.mainnet?.slice(-4)}
+                  </span>
+                </button>
+                
+                {walletMenuOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
+                    <button
+                      onClick={() => {
+                        disconnectWallet();
+                        setWalletMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-all"
                     >
                       Disconnect
-                    </Button>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Button
+              <button
                 onClick={connectWallet}
-                display={{ base: 'none', md: 'flex' }}
-                fontWeight="600"
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-brand-500 text-white rounded-lg font-semibold hover:bg-brand-600 transition-all"
               >
-                <HStack spacing={2}>
-                  <Wallet size={18} />
-                  <Text>Connect Wallet</Text>
-                </HStack>
-              </Button>
+                <Wallet size={18} />
+                <span>Connect Wallet</span>
+              </button>
             )}
 
-            {/* Mobile Menu Toggle */}
-            <IconButton
-              aria-label="Open menu"
-              variant="ghost"
-              display={{ base: 'flex', lg: 'none' }}
-              onClick={onOpen}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-all"
             >
-              <MenuIcon />
-            </IconButton>
-          </HStack>
-        </Flex>
-      </Container>
+              {mobileMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
+            </button>
+          </div>
+        </div>
 
-      {/* Mobile Drawer */}
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-        <DrawerContent>
-          <DrawerHeader borderBottomWidth="1px">
-            <HStack justify="space-between">
-              <Text>Menu</Text>
-              <CloseButton onClick={onClose} />
-            </HStack>
-          </DrawerHeader>
-          <DrawerBody>
-            <VStack align="stretch" spacing={4} mt={4}>
-              <Text fontWeight="700" color="gray.600" fontSize="sm" textTransform="uppercase">
-                Tasks
-              </Text>
-              {tasksMenuItems.map((item, index) => (
-                <Link key={index} href={item.href} passHref>
-                  <Button variant="ghost" justifyContent="start" onClick={onClose}>
-                    {item.label}
-                  </Button>
-                </Link>
-              ))}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4"
+          >
+            <div className="flex flex-col gap-4">
+              <div>
+                <div className="text-xs font-bold text-gray-600 uppercase mb-2">Tasks</div>
+                {tasksMenuItems.map((item, index) => (
+                  <Link key={index} href={item.href}>
+                    <button 
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </button>
+                  </Link>
+                ))}
+              </div>
 
-              <Text fontWeight="700" color="gray.600" fontSize="sm" textTransform="uppercase" mt={4}>
-                Explore
-              </Text>
-              {exploreMenuItems.map((item, index) => (
-                <Link key={index} href={item.href} passHref>
-                  <Button variant="ghost" justifyContent="start" onClick={onClose}>
-                    {item.label}
-                  </Button>
-                </Link>
-              ))}
+              <div>
+                <div className="text-xs font-bold text-gray-600 uppercase mb-2">Explore</div>
+                {exploreMenuItems.map((item, index) => (
+                  <Link key={index} href={item.href}>
+                    <button 
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </button>
+                  </Link>
+                ))}
+              </div>
 
               {isConnected && (
-                <>
-                  <Text fontWeight="700" color="gray.600" fontSize="sm" textTransform="uppercase" mt={4}>
-                    Account
-                  </Text>
+                <div>
+                  <div className="text-xs font-bold text-gray-600 uppercase mb-2">Account</div>
                   {accountMenuItems.map((item, index) => (
-                    <Link key={index} href={item.href} passHref>
-                      <Button variant="ghost" justifyContent="start" onClick={onClose}>
+                    <Link key={index} href={item.href}>
+                      <button 
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                         {item.label}
-                      </Button>
+                      </button>
                     </Link>
                   ))}
-                </>
+                </div>
               )}
 
-              <Box mt={6}>
+              <div className="mt-4">
                 {isConnected ? (
-                  <Button
-                    w="full"
-                    variant="outline"
+                  <button
                     onClick={() => {
                       disconnectWallet();
-                      onClose();
+                      setMobileMenuOpen(false);
                     }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-all"
                   >
                     Disconnect Wallet
-                  </Button>
+                  </button>
                 ) : (
-                  <Button
-                    w="full"
+                  <button
                     onClick={() => {
                       connectWallet();
-                      onClose();
+                      setMobileMenuOpen(false);
                     }}
+                    className="w-full px-4 py-2 bg-brand-500 text-white rounded-lg font-semibold hover:bg-brand-600 transition-all"
                   >
                     Connect Wallet
-                  </Button>
+                  </button>
                 )}
-              </Box>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-    </MotionBox>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </motion.nav>
   );
 }
