@@ -27,7 +27,7 @@ fi
 
 echo ""
 echo "Deriving private key from mnemonic..."
-PRIVATE_KEY=$(echo "${MNEMONIC}" | stx make_keychain -t 2>/dev/null | grep -o '"privateKey":"[^"]*"' | cut -d'"' -f4)
+PRIVATE_KEY=$(echo "${MNEMONIC}" | stx make_keychain -m 2>/dev/null | grep -o '"privateKey":"[^"]*"' | cut -d'"' -f4)
 
 if [ -z "$PRIVATE_KEY" ]; then
     echo "❌ Failed to derive private key"
@@ -39,6 +39,12 @@ echo "✅ Private key derived"
 # Get current nonce
 echo "Fetching account nonce..."
 NONCE=$(curl -s "https://api.mainnet.hiro.so/v2/accounts/${DEPLOYER}?proof=0" | grep -o '"nonce":[0-9]*' | cut -d':' -f2)
+
+if [ -z "$NONCE" ]; then
+    echo "❌ Failed to fetch nonce"
+    exit 1
+fi
+
 echo "Current nonce: ${NONCE}"
 
 echo ""
@@ -73,15 +79,17 @@ echo "Step 2/4: Setting reputation contract reference..."
 echo "=============================================="
 
 stx call_contract_func \
-  -H "https://api.hiro.so" \
-  -I "${MNEMONIC}" \
-  -n "${NETWORK}" \
-  "${DEPLOYER}.task-manager" \
+  "${DEPLOYER}" \
+  "task-manager" \
   "set-reputation-contract" \
-  -e "'${DEPLOYER}.reputation-tracker"
+  1000 \
+  "${NONCE}" \
+  "${PRIVATE_KEY}" \
+  "'${DEPLOYER}.reputation-tracker"
 
 if [ $? -eq 0 ]; then
     echo "✅ Reputation contract reference set!"
+    NONCE=$((NONCE + 1))
 else
     echo "❌ Failed to set reputation contract"
     exit 1
@@ -97,15 +105,17 @@ echo "Step 3/4: Authorizing task-manager in escrow..."
 echo "=============================================="
 
 stx call_contract_func \
-  -H "https://api.hiro.so" \
-  -I "${MNEMONIC}" \
-  -n "${NETWORK}" \
-  "${DEPLOYER}.task-escrow" \
+  "${DEPLOYER}" \
+  "task-escrow" \
   "authorize-contract" \
-  -e "'${DEPLOYER}.task-manager"
+  1000 \
+  "${NONCE}" \
+  "${PRIVATE_KEY}" \
+  "'${DEPLOYER}.task-manager"
 
 if [ $? -eq 0 ]; then
     echo "✅ Task manager authorized in escrow!"
+    NONCE=$((NONCE + 1))
 else
     echo "❌ Failed to authorize task manager in escrow"
     exit 1
@@ -121,12 +131,13 @@ echo "Step 4/4: Authorizing task-manager in reputation..."
 echo "=============================================="
 
 stx call_contract_func \
-  -H "https://api.hiro.so" \
-  -I "${MNEMONIC}" \
-  -n "${NETWORK}" \
-  "${DEPLOYER}.reputation-tracker" \
+  "${DEPLOYER}" \
+  "reputation-tracker" \
   "authorize-contract" \
-  -e "'${DEPLOYER}.task-manager"
+  1000 \
+  "${NONCE}" \
+  "${PRIVATE_KEY}" \
+  "'${DEPLOYER}.task-manager"
 
 if [ $? -eq 0 ]; then
     echo "✅ Task manager authorized in reputation tracker!"
