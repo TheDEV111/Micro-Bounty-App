@@ -11,10 +11,6 @@ import {
   SimpleGrid,
   Card,
   CardBody,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
   Icon,
   Badge,
 } from '@chakra-ui/react';
@@ -71,13 +67,17 @@ const StatCard = ({
 }) => (
   <Card>
     <CardBody>
-      <Stat>
-        <StatLabel color="gray.600">{label}</StatLabel>
-        <StatNumber color="brand.500" fontSize="3xl" fontWeight="800">
+      <VStack align="start" spacing={2}>
+        <Text color="gray.600" fontSize="sm" fontWeight="medium">
+          {label}
+        </Text>
+        <Heading color="brand.500" fontSize="3xl" fontWeight="800">
           {value}
-        </StatNumber>
-        <StatHelpText color="gray.500">{helpText}</StatHelpText>
-      </Stat>
+        </Heading>
+        <Text color="gray.500" fontSize="sm">
+          {helpText}
+        </Text>
+      </VStack>
     </CardBody>
   </Card>
 );
@@ -114,8 +114,11 @@ export default function HomePage() {
               </Text>
               <HStack spacing={4} pt={4}>
                 <Link href="/tasks">
-                  <Button size="lg" rightIcon={<ArrowRight size={18} />}>
-                    Browse Tasks
+                  <Button size="lg">
+                    <HStack spacing={2}>
+                      <Text>Browse Tasks</Text>
+                      <ArrowRight size={18} />
+                    </HStack>
                   </Button>
                 </Link>
                 <Link href="/tasks/create">
@@ -289,9 +292,11 @@ export default function HomePage() {
                   bg="white"
                   color="brand.500"
                   _hover={{ bg: 'gray.100' }}
-                  rightIcon={<ArrowRight size={18} />}
                 >
-                  Start Earning Now
+                  <HStack spacing={2}>
+                    <Text>Start Earning Now</Text>
+                    <ArrowRight size={18} />
+                  </HStack>
                 </Button>
               </Link>
               <Link href="/how-it-works">

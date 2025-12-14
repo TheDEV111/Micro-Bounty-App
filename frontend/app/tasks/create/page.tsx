@@ -269,11 +269,13 @@ export default function CreateTaskPage() {
                     type="submit"
                     size="lg"
                     w="full"
-                    leftIcon={<DollarSign size={20} />}
                     isLoading={isSubmitting}
                     isDisabled={!isConnected || isSubmitting}
                   >
-                    {isConnected ? 'Create Task & Deposit Funds' : 'Connect Wallet First'}
+                    <HStack spacing={2}>
+                      <DollarSign size={20} />
+                      <Text>{isConnected ? 'Create Task & Deposit Funds' : 'Connect Wallet First'}</Text>
+                    </HStack>
                   </Button>
                 </VStack>
               </form>

@@ -53,7 +53,7 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
 
 const DropdownMenu = ({ 
   label, 
-  icon: Icon, 
+  icon: IconComponent, 
   items 
 }: { 
   label: string; 
@@ -66,8 +66,6 @@ const DropdownMenu = ({
         variant="ghost"
         color="gray.700"
         fontWeight="500"
-        rightIcon={<ChevronDown size={16} />}
-        leftIcon={<Icon size={18} />}
         _hover={{
           color: 'brand.500',
           bg: 'gray.50',
@@ -77,7 +75,11 @@ const DropdownMenu = ({
         }}
         transition="all 0.3s ease"
       >
-        {label}
+        <HStack spacing={2}>
+          <IconComponent size={18} />
+          <Text>{label}</Text>
+          <ChevronDown size={16} />
+        </HStack>
       </Button>
     </PopoverTrigger>
     <PopoverContent
@@ -186,12 +188,16 @@ export default function Navbar() {
                 <PopoverTrigger>
                   <Button
                     variant="outline"
-                    leftIcon={<Wallet size={18} />}
                     display={{ base: 'none', md: 'flex' }}
                     fontWeight="600"
                   >
-                    {userData?.profile?.stxAddress?.mainnet?.slice(0, 6)}...
-                    {userData?.profile?.stxAddress?.mainnet?.slice(-4)}
+                    <HStack spacing={2}>
+                      <Wallet size={18} />
+                      <Text>
+                        {userData?.profile?.stxAddress?.mainnet?.slice(0, 6)}...
+                        {userData?.profile?.stxAddress?.mainnet?.slice(-4)}
+                      </Text>
+                    </HStack>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent w="200px">
@@ -209,23 +215,26 @@ export default function Navbar() {
               </Popover>
             ) : (
               <Button
-                leftIcon={<Wallet size={18} />}
                 onClick={connectWallet}
                 display={{ base: 'none', md: 'flex' }}
                 fontWeight="600"
               >
-                Connect Wallet
+                <HStack spacing={2}>
+                  <Wallet size={18} />
+                  <Text>Connect Wallet</Text>
+                </HStack>
               </Button>
             )}
 
             {/* Mobile Menu Toggle */}
             <IconButton
               aria-label="Open menu"
-              icon={<MenuIcon />}
               variant="ghost"
               display={{ base: 'flex', lg: 'none' }}
               onClick={onOpen}
-            />
+            >
+              <MenuIcon />
+            </IconButton>
           </HStack>
         </Flex>
       </Container>

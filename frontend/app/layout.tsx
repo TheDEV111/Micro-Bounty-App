@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/providers/chakra-provider";
-import { StacksProvider } from "@/providers/stacks-provider";
+import { Providers } from '@/providers/chakra-provider';
+import { StacksWalletProvider } from '@/providers/stacks-provider';
 
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700', '800'],
@@ -36,9 +36,9 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.variable} ${inter.variable}`}>
         <Providers>
-          <StacksProvider>
+          <StacksWalletProvider>
             {children}
-          </StacksProvider>
+          </StacksWalletProvider>
         </Providers>
       </body>
     </html>

@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
-import { StacksMainnet, StacksTestnet } from '@stacks/network';
 
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 const userSession = new UserSession({ appConfig });
@@ -11,17 +10,15 @@ interface StacksContextType {
   userSession: UserSession;
   userData: any;
   isConnected: boolean;
-  network: StacksMainnet | StacksTestnet;
   connectWallet: () => void;
   disconnectWallet: () => void;
 }
 
 const StacksContext = createContext<StacksContextType | undefined>(undefined);
 
-export function StacksProvider({ children }: { children: ReactNode }) {
+export function StacksWalletProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [network] = useState(new StacksMainnet());
 
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
@@ -59,7 +56,6 @@ export function StacksProvider({ children }: { children: ReactNode }) {
         userSession,
         userData,
         isConnected,
-        network,
         connectWallet,
         disconnectWallet,
       }}

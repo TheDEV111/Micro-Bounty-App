@@ -1,19 +1,11 @@
 import {
   makeContractCall,
-  makeContractDeploy,
-  broadcastTransaction,
   AnchorMode,
   PostConditionMode,
   stringUtf8CV,
   uintCV,
-  principalCV,
-  contractPrincipalCV,
-  standardPrincipalCV,
 } from '@stacks/transactions';
-import { StacksMainnet, StacksTestnet } from '@stacks/network';
 import { CONTRACTS } from './constants';
-
-const network = new StacksMainnet();
 
 export interface CreateTaskParams {
   title: string;
@@ -61,10 +53,9 @@ export async function createTask(params: CreateTaskParams) {
       uintCV(deadline),
     ],
     senderKey: '', // Will be signed by wallet
-    validateWithAbi: true,
-    network,
+    validateWithAbi: false,
     anchorMode: AnchorMode.Any,
-    postConditionMode: PostConditionMode.Deny,
+    postConditionMode: PostConditionMode.Allow,
   };
 
   return makeContractCall(txOptions);
