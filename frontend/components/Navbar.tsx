@@ -59,34 +59,47 @@ const DropdownMenu = ({
   label: string; 
   icon: any; 
   items: { label: string; href: string; description?: string }[] 
-}) => (
-  <Popover trigger="hover" placement="bottom-start">
-    <PopoverTrigger>
-      <Button
-        variant="ghost"
-        color="gray.700"
-        fontWeight="500"
-        _hover={{
-          color: 'brand.500',
-          bg: 'gray.50',
-        }}
-        _active={{
-          bg: 'gray.100',
-        }}
-        transition="all 0.3s ease"
-      >
-        <HStack spacing={2}>
-          <IconComponent size={18} />
-          <Text>{label}</Text>
-          <ChevronDown size={16} />
-        </HStack>
-      </Button>
-    </PopoverTrigger>
-    <PopoverContent
-      borderColor="gray.200"
-      boxShadow="xl"
-      w="280px"
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  
+  return (
+    <Popover
+      isOpen={isOpen}
+      onOpen={onOpen}
+      onClose={onClose}
+      placement="bottom-start"
+      trigger="hover"
     >
+      <PopoverTrigger>
+        <Button
+          variant="ghost"
+          color="gray.700"
+          fontWeight="500"
+          onMouseEnter={onOpen}
+          onMouseLeave={onClose}
+          _hover={{
+            color: 'brand.500',
+            bg: 'gray.50',
+          }}
+          _active={{
+            bg: 'gray.100',
+          }}
+          transition="all 0.3s ease"
+        >
+          <HStack spacing={2}>
+            <IconComponent size={18} />
+            <Text>{label}</Text>
+            <ChevronDown size={16} />
+          </HStack>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        borderColor="gray.200"
+        boxShadow="xl"
+        w="280px"
+        onMouseEnter={onOpen}
+        onMouseLeave={onClose}
+      >
       <PopoverBody p={2}>
         <VStack align="stretch" spacing={1}>
           {items.map((item, index) => (
@@ -117,8 +130,9 @@ const DropdownMenu = ({
         </VStack>
       </PopoverBody>
     </PopoverContent>
-  </Popover>
-);
+    </Popover>
+  );
+};
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();

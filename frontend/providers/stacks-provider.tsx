@@ -21,7 +21,12 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (userSession.isUserSignedIn()) {
+    if (userSession.isSignInPending()) {
+      userSession.handlePendingSignIn().then((data) => {
+        setUserData(data);
+        setIsConnected(true);
+      });
+    } else if (userSession.isUserSignedIn()) {
       const data = userSession.loadUserData();
       setUserData(data);
       setIsConnected(true);
@@ -31,14 +36,17 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
   const connectWallet = () => {
     showConnect({
       appDetails: {
-        name: 'Micro-Task Bounty Platform',
-        icon: '/logo.png',
+        name: 'TaskBounty',
+        icon: window.location.origin + '/logo.png',
       },
       redirectTo: '/',
       onFinish: () => {
         const data = userSession.loadUserData();
         setUserData(data);
         setIsConnected(true);
+      },
+      onCancel: () => {
+        console.log('User cancelled wallet connection');
       },
       userSession,
     });
@@ -48,6 +56,7 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
     userSession.signUserOut();
     setUserData(null);
     setIsConnected(false);
+    window.location.reload();
   };
 
   return (
@@ -68,7 +77,7 @@ export function StacksWalletProvider({ children }: { children: ReactNode }) {
 export function useStacks() {
   const context = useContext(StacksContext);
   if (context === undefined) {
-    throw new Error('useStacks must be used within a StacksProvider');
+    throw new Error('useStacks must be used within a StacksWalletProvider');
   }
   return context;
 }
