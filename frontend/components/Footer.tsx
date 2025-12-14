@@ -1,96 +1,172 @@
+'use client';
+
+import {
+  Box,
+  Container,
+  Stack,
+  SimpleGrid,
+  Text,
+  Link as ChakraLink,
+  VStack,
+  HStack,
+  IconButton,
+} from '@chakra-ui/react';
+import { 
+  Twitter, 
+  Github, 
+  MessageCircle, 
+  Mail,
+  Briefcase,
+  Heart
+} from 'lucide-react';
 import Link from 'next/link';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+
+const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <Link href={href} passHref>
+    <ChakraLink
+      color="gray.400"
+      _hover={{
+        color: 'brand.400',
+        textDecoration: 'none',
+      }}
+      transition="all 0.3s"
+    >
+      {children}
+    </ChakraLink>
+  </Link>
+);
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-gray-900 text-gray-300 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-4">TaskBounty</h3>
-            <p className="text-sm text-gray-400">
-              Decentralized micro-task marketplace built on Stacks blockchain. Create tasks, complete work, and earn STX.
-            </p>
-          </div>
+    <Box bg="gray.900" color="gray.300" mt="auto">
+      <Container maxW="7xl" py={12}>
+        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
+          {/* Brand Section */}
+          <VStack align="start" spacing={4}>
+            <HStack spacing={2}>
+              <Box bg="brand.500" p={2} borderRadius="lg">
+                <Briefcase size={20} color="white" />
+              </Box>
+              <Text fontSize="lg" fontWeight="800" color="white" fontFamily="heading">
+                TaskBounty
+              </Text>
+            </HStack>
+            <Text fontSize="sm" color="gray.400" maxW="250px">
+              The decentralized platform for creating, completing, and earning from micro-tasks on the blockchain.
+            </Text>
+            <HStack spacing={2}>
+              <IconButton
+                as="a"
+                href="https://twitter.com"
+                target="_blank"
+                aria-label="Twitter"
+                icon={<Twitter size={18} />}
+                size="sm"
+                variant="ghost"
+                color="gray.400"
+                _hover={{ color: 'brand.400', bg: 'gray.800' }}
+              />
+              <IconButton
+                as="a"
+                href="https://github.com"
+                target="_blank"
+                aria-label="GitHub"
+                icon={<Github size={18} />}
+                size="sm"
+                variant="ghost"
+                color="gray.400"
+                _hover={{ color: 'brand.400', bg: 'gray.800' }}
+              />
+              <IconButton
+                as="a"
+                href="https://discord.com"
+                target="_blank"
+                aria-label="Discord"
+                icon={<MessageCircle size={18} />}
+                size="sm"
+                variant="ghost"
+                color="gray.400"
+                _hover={{ color: 'brand.400', bg: 'gray.800' }}
+              />
+              <IconButton
+                as="a"
+                href="mailto:hello@taskbounty.io"
+                aria-label="Email"
+                icon={<Mail size={18} />}
+                size="sm"
+                variant="ghost"
+                color="gray.400"
+                _hover={{ color: 'brand.400', bg: 'gray.800' }}
+              />
+            </HStack>
+          </VStack>
 
-          {/* Platform */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">Platform</h4>
-            <div className="flex flex-col gap-2">
-              <Link href="/tasks" className="text-sm hover:text-brand-500 transition-colors">
-                Browse Tasks
-              </Link>
-              <Link href="/tasks/create" className="text-sm hover:text-brand-500 transition-colors">
-                Create Task
-              </Link>
-              <Link href="/how-it-works" className="text-sm hover:text-brand-500 transition-colors">
-                How It Works
-              </Link>
-              <Link href="/pricing" className="text-sm hover:text-brand-500 transition-colors">
-                Pricing
-              </Link>
-            </div>
-          </div>
+          {/* Platform Links */}
+          <VStack align="start" spacing={3}>
+            <Text fontWeight="700" color="white" fontSize="sm" mb={1}>
+              Platform
+            </Text>
+            <FooterLink href="/tasks">Browse Tasks</FooterLink>
+            <FooterLink href="/tasks/create">Create Task</FooterLink>
+            <FooterLink href="/categories">Categories</FooterLink>
+            <FooterLink href="/leaderboard">Leaderboard</FooterLink>
+            <FooterLink href="/stats">Statistics</FooterLink>
+          </VStack>
 
-          {/* Resources */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">Resources</h4>
-            <div className="flex flex-col gap-2">
-              <Link href="/docs" className="text-sm hover:text-brand-500 transition-colors">
-                Documentation
-              </Link>
-              <Link href="/blog" className="text-sm hover:text-brand-500 transition-colors">
-                Blog
-              </Link>
-              <Link href="/support" className="text-sm hover:text-brand-500 transition-colors">
-                Support
-              </Link>
-              <Link href="/faq" className="text-sm hover:text-brand-500 transition-colors">
-                FAQ
-              </Link>
-            </div>
-          </div>
+          {/* Resources Links */}
+          <VStack align="start" spacing={3}>
+            <Text fontWeight="700" color="white" fontSize="sm" mb={1}>
+              Resources
+            </Text>
+            <FooterLink href="/how-it-works">How It Works</FooterLink>
+            <FooterLink href="/docs">Documentation</FooterLink>
+            <FooterLink href="/faq">FAQ</FooterLink>
+            <FooterLink href="/support">Support</FooterLink>
+            <FooterLink href="/blog">Blog</FooterLink>
+          </VStack>
 
-          {/* Legal */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">Legal</h4>
-            <div className="flex flex-col gap-2">
-              <Link href="/privacy" className="text-sm hover:text-brand-500 transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-sm hover:text-brand-500 transition-colors">
-                Terms of Service
-              </Link>
-              <Link href="/cookies" className="text-sm hover:text-brand-500 transition-colors">
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
-        </div>
+          {/* Legal Links */}
+          <VStack align="start" spacing={3}>
+            <Text fontWeight="700" color="white" fontSize="sm" mb={1}>
+              Legal
+            </Text>
+            <FooterLink href="/terms">Terms of Service</FooterLink>
+            <FooterLink href="/privacy">Privacy Policy</FooterLink>
+            <FooterLink href="/cookies">Cookie Policy</FooterLink>
+            <FooterLink href="/guidelines">Community Guidelines</FooterLink>
+          </VStack>
+        </SimpleGrid>
+
+        <Box borderTop="1px" borderColor="gray.700" my={8} />
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-400">
-            © 2025 TaskBounty. All rights reserved.
-          </p>
-          
-          <div className="flex items-center gap-4">
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 transition-colors">
-              <Twitter size={20} />
-            </a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 transition-colors">
-              <Github size={20} />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 transition-colors">
-              <Linkedin size={20} />
-            </a>
-            <a href="mailto:contact@taskbounty.com" className="hover:text-brand-500 transition-colors">
-              <Mail size={20} />
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
+        <Stack
+          direction={{ base: 'column', md: 'row' }}
+          justify="space-between"
+          align="center"
+          spacing={4}
+        >
+          <Text fontSize="sm" color="gray.500">
+            © {currentYear} TaskBounty. All rights reserved.
+          </Text>
+          <HStack spacing={1} fontSize="sm" color="gray.500">
+            <Text>Built on</Text>
+            <ChakraLink
+              href="https://stacks.co"
+              target="_blank"
+              color="brand.400"
+              fontWeight="600"
+              _hover={{ color: 'brand.300' }}
+            >
+              Stacks
+            </ChakraLink>
+            <Text>with</Text>
+            <Heart size={14} fill="currentColor" color="#ff006f" />
+          </HStack>
+        </Stack>
+      </Container>
+    </Box>
   );
 }

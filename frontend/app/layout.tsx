@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from '@/providers/chakra-provider';
 import { StacksWalletProvider } from '@/providers/stacks-provider';
 
 const poppins = Poppins({
@@ -34,9 +35,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${poppins.variable} ${inter.variable}`}>
-        <StacksWalletProvider>
-          {children}
-        </StacksWalletProvider>
+        <Providers>
+          <StacksWalletProvider>
+            {children}
+          </StacksWalletProvider>
+        </Providers>
       </body>
     </html>
   );
